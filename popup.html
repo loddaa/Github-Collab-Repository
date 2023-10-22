@@ -5,21 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="./icons/fontawesome-free-6.4.2-web/css/all.min.css">
-    <title>Github Repo Collab</title>
+    <title>Github Collab Repository</title>
 </head>
 <body>
     <main class="container">
+        <!-- Header -->
         <div class="flex-row-between">
             <div class="flex-row">
                 <div>
-                    <i class="fa-brands fa-github fa-2xl"></i>
+                    <a href="https://github.com/settings/repositories" target="_blank"><i class="fa-brands fa-github fa-2xl"></i></a>
                 </div>
-                <h1>Github Repo Collab</h1>
+                <h1>Github Collab Repository</h1>
             </div>
             <div id="manage-token" class="display-none">
                 <i class="fa-solid fa-key"></i>
             </div>
         </div>
+
+        <!-- Form -->
         <div class="w-100" id="new-token">
             <form id='form' class="display-none">
                 <div>
@@ -55,6 +58,7 @@
                 <button id="my-repo-button">My repositories</button>
             </div>
             <div id="error-message" class="display-none">Please provide a valid token</div>
+            <div id="info-message" class="display-none">Let's get started! Add your Github token</div>
             <div id="collab-repo">
             </div>
             <div id="owned-repo" class="display-none">
