@@ -1,0 +1,10 @@
+{
+  "name": "Action script injection demo",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action":{
+    "default_popup": "popup.html",
+    "default_title": "Github repositories tracker"
+},
+  "permissions": ["activeTab", "scripting", "storage"]
+}
