@@ -1,9 +1,10 @@
 let token = '';
-let repoAsCollaborator;
+let repositories;
 
 // Fetch repositories
-async function fetchRepoAsCollaborator(token) {
-    let response = await fetch('https://api.github.com/user/repos?affiliation=collaborator', {
+async function fetchrepositories(token, collab = true) {
+
+    let response = await fetch(`https://api.github.com/user/repos${collab == true ? '?affiliation=collaborator' : '?type=owner&sort=updated'}`, {
       headers: {
         'Accept': 'application/vnd.github+json',
         'Authorization': `Bearer ${token}`,
@@ -70,26 +71,31 @@ function newToken() {
 }
 
 // Display repo to popup.html
-async function displayRepo(token) {
-    let repositoryDiv = document.getElementById('repositories');
+async function displayRepo(token, collab = true) {
+    // Re-Initialize the repositories each time function is called
+    let ownedRepoDiv = document.getElementById('owned-repo');
+    ownedRepoDiv.innerHTML = '';
+    let collabRepoDiv = document.getElementById('collab-repo');
+    collabRepoDiv.innerHTML = '';
+
     let errorMessage = document.getElementById('error-message');
     let addTokenButton = document.getElementById("add-token");
     let manageTokenDiv = document.getElementById("manage-token");
 
 
     if (token == '') {
-        console.log('No token found')
-        errorMessage.classList.remove('display-none')
+        console.log('No token found');
+        errorMessage.classList.remove('display-none');
     } else {
         console.log(`Token found : ${token}`)
-        repoAsCollaborator = await fetchRepoAsCollaborator(token);
-        if (repoAsCollaborator !== undefined) {
+        repositories = await fetchrepositories(token, collab);
+        if (repositories !== undefined) {
             // Hide error message
            errorMessage.classList.add('display-none')
            addTokenButton.classList.add('display-none')
            manageTokenDiv.classList.remove('display-none')
            let divTemplateRepo; 
-           repoAsCollaborator.forEach(repo => {
+           repositories.forEach(repo => {
                 divTemplateRepo = `
                     <div class='flex-row-between repo'>
                     <div class='repo-info'>
@@ -109,7 +115,7 @@ async function displayRepo(token) {
                     </div>
                     </div>
                 `;
-                repositoryDiv.insertAdjacentHTML('beforeend', divTemplateRepo)
+                collab == true ? collabRepoDiv.insertAdjacentHTML('beforeend', divTemplateRepo) : ownedRepoDiv.insertAdjacentHTML('beforeend', divTemplateRepo)
             });  
         } else {
             // Show error errorMessage
@@ -132,13 +138,22 @@ await displayRepo(token)
 .########...#######..##.....##
 */
 
+// Token related elements
 let addTokenButton = document.getElementById("add-token");
 let formDiv = document.getElementById("new-token");
 let manageTokenDiv = document.getElementById("manage-token");
+let tokenInput = document.getElementById('token');
+
+// Form related elements
 let form = document.getElementById("form");
 let close = document.getElementById("close");
 let errorMessage = document.getElementById('error-message')
-let tokenInput = document.getElementById('token');
+
+// Repositories related elements
+let ownedRepoButton =  document.getElementById('my-repo-button')
+let collabRepoButton = document.getElementById('repo-collaborator-button')
+let collabRepoDiv = document.getElementById('collab-repo')
+let ownedRepoDiv = document.getElementById('owned-repo')
 
 // Show form and hide add button
 addTokenButton.addEventListener('click', (event) => {
@@ -151,7 +166,7 @@ addTokenButton.addEventListener('click', (event) => {
 })
 
 // Hide form and show manage token icon
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', async (event) => {
     form.classList.add('display-none');
     form.classList.remove('fade');      
     form.classList.remove('flex-row-between');
@@ -171,7 +186,7 @@ manageTokenDiv.addEventListener('click', (event) => {
     errorMessage.classList.add('display-none')
 })
 
-// Hide form
+// Hide form and show manage token icon
 close.addEventListener('click', (event) => {
     manageTokenDiv.classList.remove('display-none');
     form.classList.add('display-none');
@@ -179,6 +194,22 @@ close.addEventListener('click', (event) => {
     form.classList.remove('flex-row-between');
 })
 
+
+// Hide collaborator repositories and show all repositories
+ownedRepoButton.addEventListener('click', async (event) => {
+    console.log('test')
+    collabRepoDiv.classList.add('display-none');
+    ownedRepoDiv.classList.remove('display-none')
+    await displayRepo(token, false);
+})
+
+// Show collaborator repositories and hide all repositories
+collabRepoButton.addEventListener('click', async (event) => {
+    console.log('test')
+    ownedRepoDiv.classList.add('display-none')
+    collabRepoDiv.classList.remove('display-none');
+    await displayRepo(token);
+})
 
 
 
